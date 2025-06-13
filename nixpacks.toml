@@ -1,11 +1,20 @@
-# nixpacks.toml
-[variables]
-BP_PYTHON_VERSION = "3.11.9"
+############################################################
+# nixpacks.toml  –  Flask + Torch ML API
+# • Locks Python to 3.11 (Pillow 9.5.0/10.x wheels exist)
+# • Adds zlib & image libs in case Pillow ever compiles from source
+# • Runs the app via Gunicorn (app.py → app instance)
+############################################################
 
+# 1️⃣  Pick the exact Python version
+[phases.setup]
+# Install python311 from Nix before anything else
+nixPkgs = ["python311"]
+
+# 2️⃣  System‑level packages that Pillow (and other libs) may need
 [pkg]
 apt = [
-  "build-essential",
-  "zlib1g-dev",
+  "build-essential",   # gcc / g++
+  "zlib1g-dev",        # ← fixes “RequiredDependencyException: zlib”
   "libjpeg-dev",
   "libpng-dev",
   "libtiff-dev",
@@ -13,5 +22,6 @@ apt = [
   "libfreetype6-dev"
 ]
 
+# 3️⃣  Start command for production
 [processes]
 web = "gunicorn app:app --bind 0.0.0.0:${PORT:-8000}"
