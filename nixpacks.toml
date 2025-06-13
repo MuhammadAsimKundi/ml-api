@@ -1,27 +1,30 @@
 ############################################################
-# nixpacks.toml  –  Flask + Torch ML API
-# • Locks Python to 3.11 (Pillow 9.5.0/10.x wheels exist)
-# • Adds zlib & image libs in case Pillow ever compiles from source
-# • Runs the app via Gunicorn (app.py → app instance)
+# nixpacks.toml  –  lean Flask + Torch API
+# • Uses Python 3.11  (pre‑built wheels exist)
+# • Installs no build tool‑chain → keeps image <4 GB
+# • Runs the app with Gunicorn
 ############################################################
 
-# 1️⃣  Pick the exact Python version
+############################
+# 1.  Base runtime packages
+############################
 [phases.setup]
-# Install python311 from Nix before anything else
+# Only Python and a minimal libc; no dev headers
 nixPkgs = ["python311"]
 
-# 2️⃣  System‑level packages that Pillow (and other libs) may need
-[pkg]
-apt = [
-  "build-essential",   # gcc / g++
-  "zlib1g-dev",        # ← fixes “RequiredDependencyException: zlib”
-  "libjpeg-dev",
-  "libpng-dev",
-  "libtiff-dev",
-  "libwebp-dev",
-  "libfreetype6-dev"
+############################
+# 2.  Python dependencies
+############################
+[phases.install]
+#  --no-cache-dir avoids pip cache bloat; final rm for good measure
+cmds = [
+  "pip install --upgrade pip",
+  "pip install --no-cache-dir -r requirements.txt",
+  "rm -rf ~/.cache/pip"
 ]
 
-# 3️⃣  Start command for production
+############################
+# 3.  Start your Flask app
+############################
 [processes]
 web = "gunicorn app:app --bind 0.0.0.0:${PORT:-8000}"

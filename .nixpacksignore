@@ -1,0 +1,19 @@
+# Ignore the virtual environment (not needed in container)
+venv/
+
+# Ignore model weights (if they’re >500MB and can be downloaded in code)
+skinLesionModel.pth
+
+# Ignore temporary or local configuration files
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.db
+*.sqlite3
+
+# IDE/OS-specific junk
+.vscode/
+*.DS_Store
