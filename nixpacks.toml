@@ -8,3 +8,6 @@ apt = [
   "libfreetype6-dev",
   "build-essential"
 ]
+
+[processes]
+web = "python app.py"

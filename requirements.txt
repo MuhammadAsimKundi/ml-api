@@ -1,5 +1,5 @@
 Flask==2.3.2
-Werkzeug==2.3.8  # Updated to compatible version
+Werkzeug==2.3.8
 torch==2.2.2
 torchvision==0.17.2
 Pillow==9.5.0
