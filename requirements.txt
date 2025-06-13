@@ -8,3 +8,5 @@ torch==2.2.2+cpu
 torchvision==0.17.2+cpu
 Pillow==9.5.0
 numpy==1.26.4
+gdown==5.2.0      # handles Google‑Drive downloads + confirmation tokens
+
