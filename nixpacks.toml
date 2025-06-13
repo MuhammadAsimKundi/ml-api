@@ -1,13 +1,17 @@
+# nixpacks.toml
+[variables]
+BP_PYTHON_VERSION = "3.11.9"
+
 [pkg]
 apt = [
-  "libjpeg-dev",
+  "build-essential",
   "zlib1g-dev",
+  "libjpeg-dev",
   "libpng-dev",
   "libtiff-dev",
   "libwebp-dev",
-  "libfreetype6-dev",
-  "build-essential"
+  "libfreetype6-dev"
 ]
 
 [processes]
-web = "python app.py"
+web = "gunicorn app:app --bind 0.0.0.0:${PORT:-8000}"
