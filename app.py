@@ -56,7 +56,7 @@ if not os.path.exists(MODEL_PATH):
 
 # Load model weights
 try:
-    state_dict = torch.load(MODEL_PATH, map_location="cpu")
+    torch.load(MODEL_PATH, map_location=torch.device('cpu'))
 
     # Rename classifier keys (if needed)
     if 'classifier.9.weight' in state_dict:
