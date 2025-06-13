@@ -1,0 +1,10 @@
+[pkg]
+apt = [
+  "libjpeg-dev",
+  "zlib1g-dev",
+  "libpng-dev",
+  "libtiff-dev",
+  "libwebp-dev",
+  "libfreetype6-dev",
+  "build-essential"
+]
