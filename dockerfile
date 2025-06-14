@@ -1,26 +1,18 @@
-# Use official lightweight Python image
-FROM python:3.10-slim
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Use official PyTorch image with CPU-only support
+FROM pytorch/pytorch:2.2.2-cpu
 
 # Set working directory
 WORKDIR /app
 
-## Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt \
-    --extra-index-url https://download.pytorch.org/whl/cpu
-
-# Copy and install dependencies
+# Copy requirements and install dependencies (torch already included)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app source code
+# Copy the entire project (including the model)
 COPY . .
 
-# Expose the port the app runs on
+# Expose the Flask port
 EXPOSE 5000
 
-# Run the application
+# Run the Flask app
 CMD ["python", "app.py"]
