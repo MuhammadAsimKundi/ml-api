@@ -8,7 +8,7 @@ import torch.nn as nn
 import io
 import os
 from dotenv import load_dotenv
-import numpy as np
+import numpy as np  # For debug endpoint
 
 # Load environment variables
 load_dotenv()
@@ -27,17 +27,17 @@ class_labels = [
     'Nevus'
 ]
 
-# Define model architecture for inference (remove BatchNorm1d)
+# Define model architecture
 model = models.mobilenet_v2(weights=None)
 model.classifier = nn.Sequential(
     nn.Dropout(0.2),
     nn.Linear(1280, 1024),
     nn.ReLU(inplace=True),
-    nn.Identity(),  # Replaces BatchNorm1d(1024)
+    nn.BatchNorm1d(1024),
     nn.Dropout(0.2),
     nn.Linear(1024, 512),
     nn.ReLU(inplace=True),
-    nn.Identity(),  # Replaces BatchNorm1d(512)
+    nn.BatchNorm1d(512),
     nn.Linear(512, len(class_labels))
 )
 
@@ -46,14 +46,11 @@ MODEL_PATH = os.getenv("MODEL_PATH", "skinLesionModel.pth")
 
 try:
     state_dict = torch.load(MODEL_PATH, map_location=torch.device("cpu"))
-
-    # Rename classifier layer keys if needed
     if 'classifier.9.weight' in state_dict:
         state_dict['classifier.8.weight'] = state_dict.pop('classifier.9.weight')
         state_dict['classifier.8.bias'] = state_dict.pop('classifier.9.bias')
-
-    model.load_state_dict(state_dict, strict=False)
-    model.eval()  # Global eval mode
+    model.load_state_dict(state_dict)
+    model.eval()
     print("✅ Model loaded successfully.")
 except Exception as e:
     print(f"❌ Failed to load model: {e}")
@@ -96,7 +93,6 @@ def predict():
         print(f"Input tensor shape: {input_tensor.shape}")
 
         with torch.no_grad():
-            model.eval()  # Extra safety: ensure eval mode
             outputs = model(input_tensor)
             print(f"Model outputs: {outputs}")
             probs = torch.nn.functional.softmax(outputs, dim=1)
@@ -113,7 +109,6 @@ def predict():
         print(f"❌ Prediction error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-# Run the Flask app
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
